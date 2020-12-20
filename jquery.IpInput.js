@@ -1,34 +1,44 @@
 (function ($) {
     $.fn.IpInput = function () {
-        $(this).on('input keyup', function (e) {
-            var validIp;
-            // разбиваем всю строку по запятой
-            var ipaddreses = $(this).val().split(',');
-            // проверяем корректность адресов
-            $.each(ipaddreses, function (i, item) {
-                // диапазон
-                if (item.indexOf('-') != -1) {
-                    if (!chek_valid_diapazon(item)) {
-                        validIp = false;
-                        return;
+            $(this).on('input keyup', function (options) {
+                options = $.extend({
+                    ColorTrue: "black", //цвет текста когда проверка пройдена
+                    ColorFalse: "red" //цвет текста когда проверка не пройдена
+                }, options);
+                var validIp;
+                // разбиваем всю строку по запятой
+                var ipaddreses = $(this).val().split(',');
+                // проверяем корректность адресов
+                $.each(ipaddreses, function (i, item) {
+                    // диапазон
+                    if (item.indexOf('-') != -1) {
+                        if (!chek_valid_diapazon(item)) {
+                            validIp = false;
+                            return;
+                        }
                     }
-                }
-                // одиночный адрес
+                    // диапазон по маске
+                    else if (item.indexOf('/') != -1) {
+                        if (!chek_valid_mask(item)) {
+                            validIp = false;
+                            return;
+                        }
+                    }
+                    // одиночный адрес
+                    else
+                        //проверяем корректность
+                        if (!chek_valid_ip(item)) {
+                            validIp = false;
+                            return;
+                        }
+                    validIp = true;
+                });
+
+                if (validIp)
+                    $(this).css('color', options.ColorTrue);
                 else
-                    //проверяем корректность
-                    if (!chek_valid_ip(item)) {
-                        validIp = false;
-                        return;
-                    }
-                validIp = true;
+                    $(this).css('color', options.ColorFalse);
             });
-
-            if (validIp)
-                $(this).css('color', 'black');
-            else
-                $(this).css('color', 'red');
-        });
-
     };
 })(jQuery);
 // валидация ip
@@ -55,4 +65,13 @@ function chek_valid_diapazon(diapazon) {
         return true;
     else
         return false;
+}
+
+function chek_valid_mask(mask) {
+
+    var addreses = mask.split('/');
+    if (addreses.length != 2) return false;
+    if (!chek_valid_ip(addreses[0])) return false;
+    if (!addreses[1].match('^[2-9]$|^[1-2][0-9]$|^3[0-2]$')) return false;
+    return true;
 }
