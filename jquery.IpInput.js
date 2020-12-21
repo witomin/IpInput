@@ -1,11 +1,18 @@
 (function ($) {
-    $.fn.IpInput = function () {
-            $(this).on('input keyup', function (options) {
-                options = $.extend({
-                    ColorTrue: "black", //цвет текста когда проверка пройдена
-                    ColorFalse: "red" //цвет текста когда проверка не пройдена
-                }, options);
-                var validIp;
+    $.fn.IpInput = function (options) {
+        options = $.extend({
+            ColorTrue: "black", //цвет текста когда проверка пройдена
+            ColorFalse: "red" //цвет текста когда проверка не пройдена
+        }, options);
+        var init = $(this).data('IpInput');
+
+        if (init) {
+            return this;
+        } else {
+            $(this).data('IpInput', true);
+
+            return this.on('input keyup', function () {
+                var status;
                 // разбиваем всю строку по запятой
                 var ipaddreses = $(this).val().split(',');
                 // проверяем корректность адресов
@@ -13,14 +20,14 @@
                     // диапазон
                     if (item.indexOf('-') != -1) {
                         if (!chek_valid_diapazon(item)) {
-                            validIp = false;
+                            status = false;
                             return;
                         }
                     }
                     // диапазон по маске
                     else if (item.indexOf('/') != -1) {
                         if (!chek_valid_mask(item)) {
-                            validIp = false;
+                            status = false;
                             return;
                         }
                     }
@@ -28,17 +35,19 @@
                     else
                         //проверяем корректность
                         if (!chek_valid_ip(item)) {
-                            validIp = false;
+                            status = false;
                             return;
                         }
-                    validIp = true;
+                    status = true;
                 });
 
-                if (validIp)
+                if (status)
                     $(this).css('color', options.ColorTrue);
                 else
                     $(this).css('color', options.ColorFalse);
+                $(this).data({ Status: status });
             });
+        };
     };
 })(jQuery);
 // валидация ip
