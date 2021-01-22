@@ -1,5 +1,9 @@
 (function ($) {
     $.fn.IpInput = function (options) {
+        if ($(this).val() == '') {
+            $(this).data({ Status: true });
+            $(this).data({ Addreses: null });
+        }
         options = $.extend({
             ColorTrue: "black", //цвет текста когда проверка пройдена
             ColorFalse: "red" //цвет текста когда проверка не пройдена
@@ -41,11 +45,17 @@
                     status = true;
                 });
 
-                if (status)
+                if (status) {
                     $(this).css('color', options.ColorTrue);
-                else
+                    $(this).data({ Addreses: $(this).val().split(',') });
+                    $(this).data({ Status: true });
+                }
+                else {
                     $(this).css('color', options.ColorFalse);
-                $(this).data({ Status: status });
+                    $(this).data({ Addreses: null });
+                    $(this).data({ Status: false });
+                }
+
             });
         };
     };
