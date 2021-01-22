@@ -1,9 +1,5 @@
 (function ($) {
     $.fn.IpInput = function (options) {
-        if ($(this).val() == '') {
-            $(this).data({ Status: true });
-            $(this).data({ Addreses: null });
-        }
         options = $.extend({
             ColorTrue: "black", //цвет текста когда проверка пройдена
             ColorFalse: "red" //цвет текста когда проверка не пройдена
@@ -14,8 +10,10 @@
             return this;
         } else {
             $(this).data('IpInput', true);
+            $(this).data({ Status: true });
+            $(this).data({ Addreses: null });
 
-            return this.on('input keyup', function () {
+            return this.on('change', function () {
                 var status;
                 // разбиваем всю строку по запятой
                 var ipaddreses = $(this).val().split(',');
