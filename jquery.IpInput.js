@@ -12,52 +12,58 @@
             $(this).data('IpInput', true);
             $(this).data({ Status: true });
             $(this).data({ Addreses: null });
-
-            return this.on('change', function () {
-                var status;
-                // разбиваем всю строку по запятой
-                var ipaddreses = $(this).val().split(',');
-                // проверяем корректность адресов
-                $.each(ipaddreses, function (i, item) {
-                    // диапазон
-                    if (item.indexOf('-') != -1) {
-                        if (!chek_valid_diapazon(item)) {
-                            status = false;
-                            return;
-                        }
-                    }
-                    // диапазон по маске
-                    else if (item.indexOf('/') != -1) {
-                        if (!chek_valid_mask(item)) {
-                            status = false;
-                            return;
-                        }
-                    }
-                    // одиночный адрес
-                    else
-                        //проверяем корректность
-                        if (!chek_valid_ip(item)) {
-                            status = false;
-                            return;
-                        }
-                    status = true;
-                });
-
-                if (status) {
-                    $(this).css('color', options.ColorTrue);
-                    $(this).data({ Addreses: $(this).val().split(',') });
-                    $(this).data({ Status: true });
-                }
-                else {
-                    $(this).css('color', options.ColorFalse);
-                    $(this).data({ Addreses: null });
-                    $(this).data({ Status: false });
-                }
-
-            });
         };
+        this.on('change', function () {
+            Chek($(this));
+        });
+
+        //проверка значения находящегося в элементе
+        function Chek(Element) {
+            var status;
+            // разбиваем всю строку по запятой
+            var ipaddreses = Element.val().split(',');
+            // проверяем корректность адресов
+            $.each(ipaddreses, function (i, item) {
+                // диапазон
+                if (item.indexOf('-') != -1) {
+                    if (!chek_valid_diapazon(item)) {
+                        status = false;
+                        return;
+                    }
+                }
+                // диапазон по маске
+                else if (item.indexOf('/') != -1) {
+                    if (!chek_valid_mask(item)) {
+                        status = false;
+                        return;
+                    }
+                }
+                // одиночный адрес
+                else
+                    //проверяем корректность
+                    if (!chek_valid_ip(item)) {
+                        status = false;
+                        return;
+                    }
+                status = true;
+            });
+
+            if (status) {
+                Element.css('color', options.ColorTrue);
+                Element.data({ Addreses: Element.val().split(',') });
+                Element.data({ Status: true });
+            }
+            else {
+                Element.css('color', options.ColorFalse);
+                Element.data({ Addreses: null });
+                Element.data({ Status: false });
+            }
+        }
+        return this;
+
     };
 })(jQuery);
+
 // валидация ip
 function chek_valid_ip(ip) {
     if (ip.match('^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$') && ip.split('.').length == 4)
@@ -83,7 +89,7 @@ function chek_valid_diapazon(diapazon) {
     else
         return false;
 }
-
+// валидация маски
 function chek_valid_mask(mask) {
 
     var addreses = mask.split('/');
